@@ -1,0 +1,79 @@
+:root {
+  --pista: #93c572;
+  --pista-deep: #5f8f3e;
+  --pista-dark: #3f6b27;
+  --pista-soft: #eef6e6;
+  --pista-mist: #f6faf1;
+  --brand: var(--pista-deep);
+  --ink: #23331b;
+  --muted: #6b7c61;
+  --line: #e1ecd6;
+  --ok: #3f8a2a;
+  --bad: #c2410c;
+}
+* { box-sizing:border-box; }
+html { background:#fff; }
+body {
+  margin:0; min-height:100vh; position:relative;
+  font-family:"Nunito","Avenir Next",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1200px 600px at 50% -200px, #e3f1d6 0%, transparent 70%),
+    linear-gradient(180deg, var(--pista-mist) 0%, #ffffff 55%, var(--pista-mist) 100%);
+  background-attachment:fixed;
+}
+/* fern fronds rising from both bottom corners */
+body::before, body::after {
+  content:""; position:fixed; bottom:0; z-index:0; pointer-events:none;
+  width:min(42vw, 520px); height:min(80vh, 720px);
+  background-repeat:no-repeat; background-size:contain; background-position:bottom;
+}
+body::before { left:0; background-image:url("/fern-left.svg"); background-position:bottom left; }
+body::after { right:0; background-image:url("/fern-right.svg"); background-position:bottom right; }
+
+header {
+  position:sticky; top:0; z-index:2;
+  background:linear-gradient(100deg, var(--pista-dark) 0%, var(--pista-deep) 45%, var(--pista) 100%);
+  color:#fff; padding:14px 24px; display:flex; gap:14px; align-items:center;
+  box-shadow:0 2px 18px rgba(63,107,39,.25);
+}
+header a { color:#fff; text-decoration:none; font-weight:800; font-size:21px; letter-spacing:.3px; display:flex; align-items:center; gap:8px; }
+header a::before { content:""; width:26px; height:26px; background:url("/fern-mark.svg") center/contain no-repeat; }
+header span { font-size:13px; background:rgba(255,255,255,.2); padding:3px 10px; border-radius:999px; }
+main { position:relative; z-index:1; max-width:900px; margin:0 auto; padding:28px 16px 80px; }
+
+h2, h3 { color:var(--pista-dark); margin-top:0; }
+.card {
+  background:rgba(255,255,255,.88); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+  border:1px solid var(--line); border-radius:18px; padding:20px; margin-bottom:18px;
+  box-shadow:0 1px 2px rgba(63,107,39,.06), 0 8px 24px rgba(63,107,39,.08);
+}
+.stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; }
+.stat { background:linear-gradient(160deg, #fff 0%, var(--pista-soft) 100%); border-radius:14px; padding:12px 14px; border:1px solid var(--line); }
+.stat b { display:block; font-size:30px; color:var(--pista-dark); }
+.stat small { color:var(--muted); }
+table { width:100%; border-collapse:collapse; table-layout:fixed; }
+th, td { text-align:left; padding:9px 6px; border-bottom:1px solid var(--line); font-size:14px; }
+th { color:var(--muted); font-weight:700; font-size:12px; text-transform:uppercase; letter-spacing:.5px; }
+tbody tr:hover td { background:var(--pista-mist); }
+button { border:0; border-radius:999px; padding:7px 14px; cursor:pointer; font-weight:700; font-family:inherit; transition:transform .1s, box-shadow .15s, background .15s; }
+button:hover { transform:translateY(-1px); }
+.primary { background:var(--pista-deep); color:#fff; box-shadow:0 2px 8px rgba(95,143,62,.35); }
+.primary:hover { background:var(--pista-dark); }
+.ghost { background:var(--pista-soft); color:var(--pista-dark); border:1px solid var(--line); }
+.ghost:hover { background:#e2f0d5; }
+.msg { padding:11px 16px; border-radius:12px; margin-bottom:14px; border:1px solid transparent; }
+.success { background:#e7f5dc; border-color:#c7e3b1; color:var(--pista-dark); }
+.error { background:#fdece4; border-color:#f6c9b3; color:var(--bad); }
+.pill { font-size:12px; padding:3px 10px; border-radius:999px; background:var(--pista-soft); color:var(--pista-dark); white-space:nowrap; font-weight:600; }
+.pill.no_show { background:#fdece4; color:var(--bad); } .pill.attended { background:#dff0cf; color:var(--ok); }
+.gap { background:#fffbea; border-color:#ecd47a; }
+form { display:inline; }
+a { color:var(--pista-deep); font-weight:600; text-underline-offset:3px; }
+a:hover { color:var(--pista-dark); }
+.actions { display:flex; gap:6px; }
+code { background:var(--pista-soft); padding:1px 6px; border-radius:6px; }
+
+@media (max-width:700px) {
+  body::before, body::after { width:60vw; height:50vh; opacity:.6; }
+}

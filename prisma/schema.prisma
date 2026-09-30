@@ -1,0 +1,105 @@
+// FitSlot data model. SQLite for the demo; switch provider to postgresql for production.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Studio {
+  id             Int         @id @default(autoincrement())
+  name           String
+  city           String
+  plan           String      @default("starter") // "starter" | "growth" | "pro"
+  whatsappNumber String      @default("") // Studio's public WhatsApp number (display only today)
+  members        Member[]
+  classTypes     ClassType[]
+}
+
+model Member {
+  id            Int            @id @default(autoincrement())
+  studio        Studio         @relation(fields: [studioId], references: [id], onDelete: Cascade)
+  studioId      Int
+  name          String
+  phone         String // E.164, e.g. +919812345678
+  email         String         @default("")
+  pushToken     String         @default("")
+  // Consent flags, one per channel. There is no WhatsApp consent yet.
+  smsOptIn      Boolean        @default(true)
+  emailOptIn    Boolean        @default(true)
+  joinedAt      DateTime       @default(now())
+  bookings      Booking[]
+  waitlist      WaitlistEntry[]
+  notifications Notification[]
+}
+
+model ClassType {
+  id              Int            @id @default(autoincrement())
+  studio          Studio         @relation(fields: [studioId], references: [id], onDelete: Cascade)
+  studioId        Int
+  name            String
+  durationMinutes Int            @default(60)
+  sessions        ClassSession[]
+}
+
+model ClassSession {
+  id          Int             @id @default(autoincrement())
+  classType   ClassType       @relation(fields: [classTypeId], references: [id], onDelete: Cascade)
+  classTypeId Int
+  trainer     String
+  room        String          @default("")
+  startsAt    DateTime
+  capacity    Int             @default(20)
+  bookings    Booking[]
+  waitlist    WaitlistEntry[]
+
+  @@index([startsAt])
+}
+
+model Booking {
+  id             Int          @id @default(autoincrement())
+  member         Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId       Int
+  session        ClassSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId      Int
+  status         String       @default("booked") // "booked" | "cancelled" | "attended" | "no_show"
+  source         String       @default("app") // "app" | "web" | "front_desk" (re-typed from a WhatsApp chat)
+  createdAt      DateTime     @default(now())
+  reminderSentAt DateTime?
+
+  @@index([sessionId, status])
+}
+
+model WaitlistEntry {
+  id        Int          @id @default(autoincrement())
+  member    Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId  Int
+  session   ClassSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId Int
+  createdAt DateTime     @default(now())
+
+  @@unique([memberId, sessionId])
+}
+
+// Log of every message sent, on any channel.
+model Notification {
+  id       Int      @id @default(autoincrement())
+  member   Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId Int
+  channel  String // "push" | "email" | "sms"
+  kind     String // "booking_confirmed" | "class_reminder" | "waitlist_promoted"
+  body     String
+  sentAt   DateTime @default(now())
+}
+
+// Raw events from the payment gateway, stored before processing.
+model PaymentEvent {
+  id         Int      @id @default(autoincrement())
+  eventId    String   @unique
+  eventType  String
+  payload    String // JSON
+  receivedAt DateTime @default(now())
+}
